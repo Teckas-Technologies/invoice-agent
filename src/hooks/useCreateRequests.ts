@@ -9,7 +9,6 @@ import {
     Utils,
 } from "@requestnetwork/request-client.js";
 import { Web3SignatureProvider } from "@requestnetwork/web3-signature";
-import { useProvider } from "@/contexts/ContractProvider";
 
 interface Data {
     recipientAddress: string;
@@ -42,10 +41,9 @@ export const useCreateRequest = () => {
     const { address, isConnecting, isDisconnected } = useAccount();
     const [status, setStatus] = useState(APP_STATUS.AWAITING_INPUT);
     const [requestData, setRequestData] = useState<Types.IRequestDataWithEvents>();
-    const { provider } = useProvider();
 
     const createRequest = async (data: Data) => {
-        if (!provider) {
+        if (!walletClient) {
             setError("No wallet client available.");
             setLoading(false);
             return;

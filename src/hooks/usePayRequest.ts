@@ -3,7 +3,6 @@ import { useAccount, useWalletClient } from "wagmi";
 import { APP_STATUS } from "./useCreateRequests";
 import { RequestNetwork, Types } from "@requestnetwork/request-client.js";
 import { approveErc20, hasErc20Approval, hasSufficientFunds, payRequest } from "@requestnetwork/payment-processor";
-// import { useProvider } from "@/contexts/ContractProvider";
 import { providers, ethers } from 'ethers';
 import { useEthersV5Provider } from "@/hooks/use-ethers-v5-provider";
 import { useEthersV5Signer } from "@/hooks/use-ethers-v5-signer";
