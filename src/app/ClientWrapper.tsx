@@ -18,6 +18,9 @@ export default function ClientWrapper({
     setContractAddress(params.get("contractAddress") || "default-address");
     setAbi(params.get("abi") || "default-abi");
     setAgentId(params.get("agentId") || "default-agentId");
+    alert(params.get("contractAddress"))
+    alert(params.get("abi"))
+    alert(params.get("contractAddress"))
   }, []);
 
   return (
