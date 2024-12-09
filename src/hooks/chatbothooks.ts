@@ -11,8 +11,8 @@ import {
   Utils,
 } from "@requestnetwork/request-client.js";
 import { Web3SignatureProvider } from "@requestnetwork/web3-signature";
-import { useProvider } from "@/contexts/ContractProvider";
 import { ethers } from "ethers";
+import { useGeneric } from "./useGeneric";
 
 interface Data {
   recipientAddress: string;
@@ -25,9 +25,9 @@ interface Data {
 }
 declare global {
   interface Window {
-      walletClient?: any; // ethers.providers.ExternalProvider
+    walletClient?: any; // ethers.providers.ExternalProvider
   }
-} 
+}
 export enum APP_STATUS {
   AWAITING_INPUT = "awaiting input",
   SUBMITTING = "submitting",
@@ -54,10 +54,10 @@ const useVoiceBackend = () => {
   const [success, setSuccess] = useState<boolean | null>(null);
   const [status, setStatus] = useState(APP_STATUS.AWAITING_INPUT);
   const [requestData, setRequestData] = useState<Types.IRequestDataWithEvents>();
-  const { provider } = useProvider();
-  const {address} = useAccount();
-  const {data:walletClient} = useWalletClient();
+  const { address } = useAccount();
+  const { data: walletClient } = useWalletClient();
   const [dummyClient, setDummyClient] = useState();
+  const { funcCall, getfuncTokenValue } = useGeneric();
   // Function to generate a unique session ID
   const generateSessionId = () => {
     return `session-${Math.random().toString(36).substring(2, 15)}`;
@@ -71,14 +71,14 @@ const useVoiceBackend = () => {
   const convertToWholeNumber = (amount: string, decimals: number): number => {
     // Convert the string to a number and divide by 10^decimals to shift decimal points
     return parseInt(amount) / Math.pow(10, decimals);
-};
+  };
 
-const setMessage = (sender: string, text: string) => {
-  setMessages((prevMessages) => [
-    ...prevMessages,
-    { sender, text },
-  ]);
-};
+  const setMessage = (sender: string, text: string) => {
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { sender, text },
+    ]);
+  };
 
 
   // Function to make the API call
@@ -101,7 +101,7 @@ const setMessage = (sender: string, text: string) => {
 
     try {
       const response = await fetch(
-        "https://rnp-master-agent-d2b5etd8cwgzcaer.canadacentral-01.azurewebsites.net/voice-backend",
+        "https://abi-master-agent-dgcmghddard0h8d2.canadacentral-01.azurewebsites.net/voice-backend",
         {
           method: "POST",
           headers: {
@@ -118,190 +118,57 @@ const setMessage = (sender: string, text: string) => {
       console.log(data);
       // console.log(data.meta_data.isFetchPaymentRequest);
 
-      if (data.meta_data.isFetchPaymentRequest || data.intent==="fetchPaymentRequests"  ) {
-        if (address) {
-          const res = await fetchRequests(address);
-          console.log("RES:", res);
-          if (res) {
-            if (Array.isArray(res)) {
-              setIsPaymentRequired(true);
-              const formattedResponses = res.map((item: any, index: number) => {
-                const reason = item.contentData?.reason || "N/A";
-                const dueDate = item.contentData?.dueDate || "N/A";
-                const builderId = item.contentData?.builderId || "N/A";
-                const state = item.state || "N/A";
-                const currency = item.currency || "N/A";
-                const status = item.balance?.balance === item.expectedAmount ? "Paid" : "Unpaid";
-                const requestId = item.requestId || "N/A";
-                const payer = item.payer?.value || "N/A";
-                const amount = convertToWholeNumber(item.expectedAmount,6) || "N/A";
-                const payee = item.payee?.value || "N/A";
 
-                return `
-                Request ${index + 1}\n
-                <br/> Currency: $${amount}\n
-                 <br/> Payer: ${payer}\n
-                  <br/> Payee: ${payee}\n
-               <br/> Status: ${status}\n
-               <br/> <span hidden> RequestId: ${requestId}\n</span>
-              `;
-              });
-              if (!data.text) {
-                if (data.intent === "getCurrency") {
-                  setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { sender: "bot", text: "Great! Now, please specify the currency you want to use for the payment request." },
-                  ]);
-                } else if (data.intent === "getAmount") {
-                  setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { sender: "bot", text: "Perfect! Next, please enter the amount for the payment request" },
-                  ]);
-                } else if (data.intent === "getReason") {
-                  setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { sender: "bot", text: "Got it! Now, please provide the reason for this payment request." },
-                  ]);
-                } else if (data.intent === "getExtradetails" || data.intent === "getExtraDetailName1" || data.intent === "getExtraDetailName2") {
-                  setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { sender: "bot", text: "Do you have any additional details for this payment request?" },
-                  ]);
-                }else if(data.intent==="fetchPaymentRequests"){
-                  setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { sender: "bot", text: "Fetching.." },
-                  ]);
-                }
-                else {
-                  setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { sender: "bot", text: data.text },
-                  ]);
-                }
-              } else {
-                setMessages((prevMessages) => [
-                  ...prevMessages,
-                  { sender: "bot", text: data.text },
-                ]);
-              }
-
-              // Add each formatted response to the chatbot messages
-              formattedResponses.forEach((responseText: any) => {
-                setMessages((prevMessages) => [
-                  ...prevMessages,
-                  { sender: "bot", text: responseText },
-                ]);
-              });
-            } else {
-              setMessages((prevMessages) => [
-                ...prevMessages,
-                { sender: "bot", text: "Unable to fetch your invoice" },
-              ]);
-            }
-          }
-        }
-
-      }
-      else if (data.intent === "finalJson") {
-        if (!walletClient) {
-          setError("No wallet client available.");
-          setLoading(false);
-          return;
-      }
-      setLoading(true);
-      setError(null);
-      setSuccess(null);
-
-      try {
-        const extraData = data.meta_data?.extra || {};
-          const signatureProvider = new Web3SignatureProvider(walletClient);
-          const requestClient = new RequestNetwork({
-              nodeConnectionConfig: {
-                  baseURL: "https://sepolia.gateway.request.network/",
-              },
-              signatureProvider,
-          });
-
-          const requestCreateParameters: Types.ICreateRequestParameters = {
-            requestInfo: {
-                currency: {
-                    type: Types.RequestLogic.CURRENCY.ERC20,
-                    value: "0x0EC435037161ACd3bB94eb8DF5BC269f17A4E1b9",
-                    network: "sepolia",
-                },
-                expectedAmount: parseUnits(
-                    data.meta_data.amount                          ,
-                    6,
-                ).toString(),
-                payee: {
-                    type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
-                    value: address as string,
-                },
-                timestamp: Utils.getCurrentTimestampInSecond(),
-            },
-            paymentNetwork: {
-                id: Types.Extension.PAYMENT_NETWORK_ID.ERC20_FEE_PROXY_CONTRACT,
-                parameters: {
-                    paymentNetworkName: "sepolia",
-                    paymentAddress: data.recipientAddress || address,
-                    feeAddress: zeroAddress,
-                    feeAmount: "0",
-                },
-            },
-            contentData: {
-                reason: data.reason,
-                ...extraData
-            },
-            signer: {
-                type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
-                value: address as string,
-            },
-        };
-
-          if (data.payerAddress) {
-              requestCreateParameters.requestInfo.payer = {
-                  type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
-                  value: data.payerAddress,
-              };
-          }
-
-          setStatus(APP_STATUS.PERSISTING_TO_IPFS);
-          const request = await requestClient.createRequest(requestCreateParameters);
-          setStatus(APP_STATUS.PERSISTING_ON_CHAIN);
-          setRequestData(request.getData());
-          const confirmedRequestData = await request.waitForConfirmation();
-
-          setStatus(APP_STATUS.REQUEST_CONFIRMED);
-          setRequestData(confirmedRequestData);
-          setSuccess(true);
-          console.log("confirmedRequestData", confirmedRequestData)
-          setSuccess(true)
+      if (data.intent === "final_json") {
+        if (!address) {
           setMessages((prevMessages) => [
             ...prevMessages,
-            { sender: "bot", text: data.text },
+            { sender: "bot", text: "Please connect your wallet!" },
           ]);
-             setMessages((prevMessages) => [
+          return;
+        }
+        const contractAddress = data.meta_data.contract;
+        const functionName = data.meta_data.functionName;
+        const gasLimit = data.meta_data.gasLimit;
+        const parameters = data.meta_data.parameters;
+
+        if (!address || (address.trim().startsWith("0x") && address.trim().length !== 42)) {
+          setMessages((prevMessages) => [
             ...prevMessages,
-            { sender: "bot", text: `<a href="https://scan.request.network/request/${confirmedRequestData.requestId}" target="_blank" 
-> view </a>` },
-          ]); 
-          return { success: true }
-      } catch (error) {
-          console.error('Error creating request:', error);
-          setError('Failed to create request');
-          setStatus(APP_STATUS.ERROR_OCCURRED);
-          setMessages((prevMessages) => [   
-            ...prevMessages,
-            { sender: "bot", text: "Your invoice created has failed" },
+            { sender: "bot", text: "Not a valid connected address!" },
           ]);
-          console.log("Error:", error)
-          return { success: false }
-      } finally {
-          setLoading(false);
+          return;
+        }
+
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { sender: "bot", text: `Executing function: ${functionName}!` },
+        ]);
+
+        const res = await getfuncTokenValue(functionName, parameters, gasLimit);
+
+        console.log("RES:", res);
+
+        if (res?.isGas) {
+          console.log("RES1:", res.data)
+        }
+
+        if (!res?.isGas && res) {
+          console.log("RES2:", res.data)
+        }
+
+      } else if (data.intent === "get_approve") {
+        if (!address) {
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { sender: "bot", text: "Please connect your wallet!" },
+          ]);
+          return;
+        }
+        const res = await funcCall("5");
+        console.log("RES:", res)
       }
-  }               
-       else {
+      else {
         // Extract the text from the response and store it in the messages state
         const botMessage = data.text || "No response from bot";
 

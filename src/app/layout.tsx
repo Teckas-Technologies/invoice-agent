@@ -3,18 +3,18 @@ import localFont from "next/font/local";
 import "./globals.css";
 import ContextProvider from "@/contexts/ContextProvider";
 import { headers } from "next/headers";
-import { EthProvider } from "@/contexts/ContractProvider";
 import Script from "next/script";
+import { ContractProvider } from "@/contexts/ContractProvider";
 
 if (typeof process === 'undefined') {
   (globalThis as any).process = {
-      nextTick: (callback: Function) => setTimeout(callback, 0),
-      // Add any required dummy properties to satisfy the NodeJS.Process type
-      env: {}, // Minimal placeholder for environment variables
-      version: '', // Placeholder for Node.js version
-      versions: {}, // Placeholder for Node.js versions
-      stdout: undefined, // Optional: provide mock stdout if needed
-      stderr: undefined, // Optional: provide mock stderr if needed
+    nextTick: (callback: Function) => setTimeout(callback, 0),
+    // Add any required dummy properties to satisfy the NodeJS.Process type
+    env: {}, // Minimal placeholder for environment variables
+    version: '', // Placeholder for Node.js version
+    versions: {}, // Placeholder for Node.js versions
+    stdout: undefined, // Optional: provide mock stdout if needed
+    stderr: undefined, // Optional: provide mock stderr if needed
   };
 }
 
@@ -44,15 +44,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-      {/* <Script id="chatbot" data-agent-id="12345" src="https://chatbot-teckas.netlify.app/ChatBot.js"></Script> */}
-        </head>
+        {/* <Script id="chatbot" data-agent-id="12345" src="https://chatbot-teckas.netlify.app/ChatBot.js"></Script> */}
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ContextProvider cookies={cookies}>
-          <EthProvider>
+          <ContractProvider>
             {children}
-          </EthProvider>
+          </ContractProvider>
         </ContextProvider>
       </body>
     </html>
