@@ -15,12 +15,12 @@ export default function ClientWrapper({
   useEffect(() => {
     // Extract query parameters from URL
     const params = new URLSearchParams(window.location.search);
-    setContractAddress(params.get("contractAddress") || "default-address");
-    setAbi(params.get("abi") || "default-abi");
-    setAgentId(params.get("agentId") || "default-agentId");
-    alert(params.get("contractAddress"))
-    alert(params.get("abi"))
-    alert(params.get("contractAddress"))
+    const contractAddress = params.get("contractAddress");
+    const abi = params.get("abi");
+    const agentId = params.get("agentId");
+    alert(contractAddress)
+    alert(abi)
+    alert(agentId)
   }, []);
 
   return (
