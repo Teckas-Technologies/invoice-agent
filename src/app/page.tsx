@@ -72,9 +72,9 @@ export default function Home() {
       {/* <RequestTabs /> */}
       {show ? (
         <ChatBot agentId={agent} />
-      ) : (
-        <ChatAccessDenied />
-      )}
+       ) : (
+         <ChatAccessDenied />
+       )}
       {/* <SampleCode /> */}
     </main>
   );
