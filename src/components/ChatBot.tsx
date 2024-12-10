@@ -173,7 +173,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
   return (
     <div className="flex flex-col rounded-tl-xl rounded-tr-xl rounded-bl-xl min-w-[370px] rounded-br-xl h-screen bg-[#f5f5f5] text-gray-800">
       <header className="flex-shrink-0 w-full rounded-tl-xl rounded-tr-xl flex justify-start gap-4 items-center bg-gradient-to-r from-black to-black text-white py-4 px-6 shadow-md">
-        <h1 className="text-xl font-bold">Invoicing Agent</h1>
+        <h1 className="text-xl font-bold">Agentify</h1>
         {!isConnected ? (
           <div className="px-5 py-1" onClick={handleConnectWallet}>
             <img className="cursor-pointer  w-7 h-7" style={{backgroundColor: "#fff", borderRadius: "5px"}} src="/w1.png"></img>
