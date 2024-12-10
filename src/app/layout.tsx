@@ -46,7 +46,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-      {/* <Script id="chatbot" data-agent-id="67575fc1c74d7b6d49f79ac8" data-contract-address="" data-abi="" src="https://abi-script.vercel.app/ChatBot.js"></Script> */}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

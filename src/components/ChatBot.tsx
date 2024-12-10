@@ -11,7 +11,7 @@ import { useState, useEffect, useRef } from "react";
 import { useAccount, useDisconnect } from "wagmi";
 
 export default function ChatBot({ agentId}: { agentId: any}) {
-  const { sessionId, messages,setMessage, isloading, isPaymentRequired, sendRequest } = useVoiceBackend();
+  const { sessionId, messages,setMessage, isloading, isPaymentRequired, sendRequest,paying,calling } = useVoiceBackend();
   const [query, setQuery] = useState("");
   const [errorMessage, setErrorMessage] = useState<string>("");  // Added error state
   const [successMessage, setSuccessMessage] = useState<string>("");  // Added error state
@@ -260,11 +260,24 @@ export default function ChatBot({ agentId}: { agentId: any}) {
                 </div>
                 </>
               )} */}
-               {isPay&&(
+               {paying&&(
                  <div className="flex justify-start">
                    <div className="p-3 rounded-lg max-w-[330px] break-words shadow-md bg-gray-200 text-gray-800">
                    <span className="flex items-center gap-1">
                    <span className="ml-2">Paying</span>
+                     <div className="animate-pulse">•</div>
+                     <div className="animate-pulse delay-100">•</div>
+                     <div className="animate-pulse delay-200">•</div>
+                   </span>
+                   </div>
+                   </div>
+              )}
+
+            {calling&&(
+                 <div className="flex justify-start">
+                   <div className="p-3 rounded-lg max-w-[330px] break-words shadow-md bg-gray-200 text-gray-800">
+                   <span className="flex items-center gap-1">
+                   <span className="ml-2">Function calling</span>
                      <div className="animate-pulse">•</div>
                      <div className="animate-pulse delay-100">•</div>
                      <div className="animate-pulse delay-200">•</div>

@@ -48,6 +48,8 @@ const useVoiceBackend = () => {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<{ sender: string; text: string }[]>([]); // Store messages
   const [isloading, setIsLoading] = useState<boolean>(false);
+  const [paying,setPaying] = useState(false);
+  const [calling,setCalling] = useState(false);
   const { fetchRequests } = useFetchRequests();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -127,6 +129,7 @@ const useVoiceBackend = () => {
           ]);
           return;
         }
+        setPaying(true)
         const contractAddress = data.meta_data.contract;
         const functionName = data.meta_data.functionName;
         const gasLimit = data.meta_data.gasLimit;
@@ -151,11 +154,23 @@ const useVoiceBackend = () => {
 
         if (res?.isGas) {
           console.log("RES1:", res.data)
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { sender: "bot", text:`<a target="_blank" href="https://sepolia.etherscan.io/tx/${res.data.transactionHash}">View</a>` },
+          ]);
+          
+  
         }
 
         if (!res?.isGas && res) {
           console.log("RES2:", res.data)
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { sender: "bot", text: res.data },
+          ]);
+  
         }
+        setPaying(false);
 
       } else if (data.intent === "get_approve") {
         if (!address) {
@@ -165,7 +180,9 @@ const useVoiceBackend = () => {
           ]);
           return;
         }
+        setCalling(true)
         const res = await funcCall("5");
+        setCalling(false);
         console.log("RES:", res)
       }
       else {
@@ -193,6 +210,8 @@ const useVoiceBackend = () => {
     sessionId,
     messages,
     isloading,
+    paying,
+    calling,
     isPaymentRequired,
     sendRequest,
     setMessage
