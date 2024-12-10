@@ -41,7 +41,7 @@ export default function Home() {
         const agentId = params.get("agentId");
         if (agentId) {
            console.log(agentId);
-          const res = await fetch(`https://rnp-master-agent-d2b5etd8cwgzcaer.canadacentral-01.azurewebsites.net/check-agent?agentId=${agentId}`);
+          const res = await fetch(`https://abi-master-agent-dgcmghddard0h8d2.canadacentral-01.azurewebsites.net/check-agent?agentId=${agentId}`);
            console.log(res);
           const data = await res.json(); 
           console.log(data);
