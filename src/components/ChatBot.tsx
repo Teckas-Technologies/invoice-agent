@@ -176,7 +176,7 @@ export default function ChatBot({ agentId }: { agentId: any }) {
         <h1 className="text-xl font-bold">Invoicing Agent</h1>
         {!isConnected ? (
           <div className="px-5 py-1" onClick={handleConnectWallet}>
-            <img className="cursor-pointer  w-7 h-7" src="/w1.png"></img>
+            <img className="cursor-pointer  w-7 h-7" style={{backgroundColor: "#fff", borderRadius: "5px"}} src="/w1.png"></img>
           </div>
         ) : (
           <div className="px-5 py-1" onClick={handleDisconnect}>

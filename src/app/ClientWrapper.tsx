@@ -25,8 +25,8 @@ export default function ClientWrapper({
 
   return (
     <ContractProvider
-      contractAddress={contractAddress}
-      abi={abi}
+      // contractAddress={contractAddress}
+      // abi={abi}
     >
       {children}
     </ContractProvider>
