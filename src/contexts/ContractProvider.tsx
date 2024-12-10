@@ -79,8 +79,8 @@ export const ContractProvider = ({ children }: { children: ReactNode }) => {
                     console.log("Step4", window.ethereum);
                     detectedProvider = new ethers.providers.Web3Provider(window.ethereum);
                     console.log("Step5", detectedProvider);
-                    const res = await detectedProvider.send("eth_requestAccounts", []);
-                    console.log("Step6", res);
+                    // const res = await detectedProvider.send("eth_requestAccounts", []);
+                    // console.log("Step6", res);
                 } else {
                     console.log("Step7");
                     const walletConnectProvider = await EthereumProvider.init({
