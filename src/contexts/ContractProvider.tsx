@@ -24,14 +24,9 @@ const ContractContext = createContext<{
     refetchBalance: (account: string) => Promise<void>;
 } | undefined>(undefined);
 
-interface ContractProviderProps {
-    contractAddress: string;
-    abi: any;
-    children: ReactNode;
-  }
 
 // ContractProvider component
-export const ContractProvider = ({ contractAddress, abi, children }: ContractProviderProps) => {
+export const ContractProvider = ({ children }: { children: ReactNode }) => {
     const [contract, setContract] = useState<ethers.Contract | null>(null);
     const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null);
     const [myidBalance, setMyidBalance] = useState("0");
@@ -79,7 +74,7 @@ export const ContractProvider = ({ contractAddress, abi, children }: ContractPro
                     try {
                         const provider = new ethers.providers.Web3Provider(window.ethereum);
                         const signer = provider.getSigner();
-                        const contractInstance = new ethers.Contract(contractAddress, JSON.parse(abi), signer);
+                        const contractInstance = new ethers.Contract(MYIDPresaleAddress, MYIDPresaleABI, signer);
                         setProvider(provider);
                         setContract(contractInstance);
                     } catch (error) {
@@ -96,7 +91,7 @@ export const ContractProvider = ({ contractAddress, abi, children }: ContractPro
 
                         const provider = new ethers.providers.Web3Provider(walletConnectProvider);
                         const signer = provider.getSigner();
-                        const contractInstance = new ethers.Contract(contractAddress, MYIDPresaleABI, signer);
+                        const contractInstance = new ethers.Contract(MYIDPresaleAddress, MYIDPresaleABI, signer);
                         setProvider(provider);
                         setContract(contractInstance);
                     } catch (error) {
