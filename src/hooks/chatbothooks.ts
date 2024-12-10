@@ -58,6 +58,8 @@ const useVoiceBackend = () => {
   const { data: walletClient } = useWalletClient();
   const [dummyClient, setDummyClient] = useState();
   const { funcCall, getfuncTokenValue } = useGeneric();
+  const [funcCalling, setFuncCalling] = useState(false);
+  const [approving, setApproving] = useState(false);
   // Function to generate a unique session ID
   const generateSessionId = () => {
     return `session-${Math.random().toString(36).substring(2, 15)}`;
@@ -142,8 +144,9 @@ const useVoiceBackend = () => {
 
         setMessages((prevMessages) => [
           ...prevMessages,
-          { sender: "bot", text: `Executing function: ${functionName}!` },
+          { sender: "bot", text: `Function Name: ${functionName}!` },
         ]);
+        setFuncCalling(true);
 
         const res = await getfuncTokenValue(functionName, parameters, gasLimit);
 
@@ -151,10 +154,12 @@ const useVoiceBackend = () => {
 
         if (res?.isGas) {
           console.log("RES1:", res.data)
+          setFuncCalling(false);
         }
 
         if (!res?.isGas && res) {
           console.log("RES2:", res.data)
+          setFuncCalling(false);
         }
 
       } else if (data.intent === "get_approve") {
@@ -165,10 +170,28 @@ const useVoiceBackend = () => {
           ]);
           return;
         }
-        const res = await funcCall("5");
-        console.log("RES:", res)
-      }
-      else {
+
+        setApproving(true);
+
+        try {
+          const res = await funcCall("100");
+          console.log("RES:", res);
+
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { sender: "bot", text: "Approve executed successfully!" },
+          ]);
+        } catch (error) {
+          console.error("Error during approval:", error);
+
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { sender: "bot", text: "Approval execution failed." },
+          ]);
+        } finally {
+          setApproving(false);
+        }
+      } else {
         // Extract the text from the response and store it in the messages state
         const botMessage = data.text || "No response from bot";
 
@@ -194,6 +217,8 @@ const useVoiceBackend = () => {
     messages,
     isloading,
     isPaymentRequired,
+    approving,
+    funcCalling,
     sendRequest,
     setMessage
   };
