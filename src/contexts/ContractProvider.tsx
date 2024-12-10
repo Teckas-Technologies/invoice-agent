@@ -92,6 +92,7 @@ export const ContractProvider = ({ children }: { children: ReactNode }) => {
 
                 setProvider(detectedProvider);
                 setContract(contractInstance);
+                console.log("Contract initialized:", contractInstance);
             } catch (error: any) {
                 console.error("Error initializing contract:", error);
                 alert(error.message || "Error initializing contract. Check the console for details.");
