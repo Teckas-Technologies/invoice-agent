@@ -18,16 +18,15 @@ export default function ClientWrapper({
     const contractAddress = params.get("contractAddress");
     const abi = params.get("abi");
     const agentId = params.get("agentId");
-    alert(contractAddress)
-    alert(abi)
-    alert(agentId)
+    // alert(contractAddress)
+    // alert(abi)
+    // alert(agentId)
   }, []);
 
   return (
     <ContractProvider
-    //   contractAddress={contractAddress}
-    //   abi={abi}
-    //   agentId={agentId}
+      // contractAddress={contractAddress}
+      // abi={abi}
     >
       {children}
     </ContractProvider>

@@ -24,6 +24,7 @@ const ContractContext = createContext<{
     refetchBalance: (account: string) => Promise<void>;
 } | undefined>(undefined);
 
+
 // ContractProvider component
 export const ContractProvider = ({ children }: { children: ReactNode }) => {
     const [contract, setContract] = useState<ethers.Contract | null>(null);

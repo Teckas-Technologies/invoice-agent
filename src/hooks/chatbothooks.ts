@@ -60,6 +60,8 @@ const useVoiceBackend = () => {
   const { data: walletClient } = useWalletClient();
   const [dummyClient, setDummyClient] = useState();
   const { funcCall, getfuncTokenValue } = useGeneric();
+  const [funcCalling, setFuncCalling] = useState(false);
+  const [approving, setApproving] = useState(false);
   // Function to generate a unique session ID
   const generateSessionId = () => {
     return `session-${Math.random().toString(36).substring(2, 15)}`;
@@ -145,8 +147,9 @@ const useVoiceBackend = () => {
 
         setMessages((prevMessages) => [
           ...prevMessages,
-          { sender: "bot", text: `Executing function: ${functionName}!` },
+          { sender: "bot", text: `Function Name: ${functionName}!` },
         ]);
+        setFuncCalling(true);
 
         const res = await getfuncTokenValue(functionName, parameters, gasLimit);
 
@@ -158,8 +161,6 @@ const useVoiceBackend = () => {
             ...prevMessages,
             { sender: "bot", text:`<a target="_blank" href="https://sepolia.etherscan.io/tx/${res.data.transactionHash}">View</a>` },
           ]);
-          
-  
         }
 
         if (!res?.isGas && res) {
@@ -168,7 +169,6 @@ const useVoiceBackend = () => {
             ...prevMessages,
             { sender: "bot", text: res.data },
           ]);
-  
         }
         setPaying(false);
 
@@ -181,11 +181,29 @@ const useVoiceBackend = () => {
           return;
         }
         setCalling(true)
-        const res = await funcCall("5");
+        try {
+          const res = await funcCall("100");
+          console.log("RES:", res);
+
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { sender: "bot", text: "Approve executed successfully!" },
+          ]);
+        } catch (error) {
+          console.error("Error during approval:", error);
+
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { sender: "bot", text: "Approval execution failed." },
+          ]);
+        } finally {
+          setCalling(false);
+        }
         setCalling(false);
         console.log("RES:", res)
       }
       else {
+
         // Extract the text from the response and store it in the messages state
         const botMessage = data.text || "No response from bot";
 

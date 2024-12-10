@@ -15,10 +15,10 @@ import ChatAccessDenied from "@/components/Access";
 
 export default function Home() {
   const [requestData, setRequestData] = useState(null);
-  const[show,setShow] = useState(true);
-  const [agent,setAgent] = useState("67575fc1c74d7b6d49f79ac8");
+  const [show, setShow] = useState(true);
+  const [agent, setAgent] = useState("67575fc1c74d7b6d49f79ac8");
   const [accountId, setAccountId] = useState<string | null>(null);
-  const [walletClient,setWalletClient]= useState("");
+  const [walletClient, setWalletClient] = useState("");
   const handleCreateRequest = async (data: any) => {
     const response = await fetch('/api/createRequest', {
       method: 'POST',
@@ -40,22 +40,22 @@ export default function Home() {
         const params = new URLSearchParams(window.location.search);
         const agentId = params.get("agentId");
         if (agentId) {
-           console.log(agentId);
-          const res = await fetch(`https://rnp-master-agent-d2b5etd8cwgzcaer.canadacentral-01.azurewebsites.net/check-agent?agentId=${agentId}`);
-           console.log(res);
-          const data = await res.json(); 
+          console.log(agentId);
+          const res = await fetch(`https://abi-master-agent-dgcmghddard0h8d2.canadacentral-01.azurewebsites.net/check-agent?agentId=${agentId}`);
+          console.log(res);
+          const data = await res.json();
           console.log(data);
-          if(data.agent_exists===true){
+          if (data.agent_exists === true) {
             console.log(data);
             setShow(true);
             setAgent(agentId);
-          }else{
+          } else {
             setShow(false);
           }
-        }else{
+        } else {
           setShow(false);
         }
-      } catch (err:any) {
+      } catch (err: any) {
         console.log(err.message);
       }
     };
@@ -70,11 +70,11 @@ export default function Home() {
       {/* <Script id="chatbot" data-agent-id="67575fc1c74d7b6d49f79ac8"  src="https://chatbot-teckas.netlify.app/ChatBot.js"></Script> */}
       {/* <CreateRequestForm /> */}
       {/* <RequestTabs /> */}
-      {/* {show?(  */}
-       <ChatBot agentId={agent}/>
-      {/* // ):(
-      //   <ChatAccessDenied/>
-      // )}    */}
+      {show ? (
+        <ChatBot agentId={agent} />
+      ) : (
+        <ChatAccessDenied />
+      )}
       {/* <SampleCode /> */}
     </main>
   );
