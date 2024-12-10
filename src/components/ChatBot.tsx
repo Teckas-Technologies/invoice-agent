@@ -258,7 +258,7 @@ export default function ChatBot({ agentId}: { agentId: any}) {
                 </div>
                 </>
               )} */}
-               {paying&&(
+               {isPay&&(
                  <div className="flex justify-start">
                    <div className="p-3 rounded-lg max-w-[330px] break-words shadow-md bg-gray-200 text-gray-800">
                    <span className="flex items-center gap-1">
